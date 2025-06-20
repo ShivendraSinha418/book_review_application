@@ -1,10 +1,10 @@
 const express = require('express');
-const router = express.Router();
-const auth = require('../middleware/authMiddleware');
+const { protect } = require('../middleware/authMiddleware');
 const { addReview, updateReview, deleteReview } = require('../controllers/reviewController');
+const router = express.Router();
 
-router.post('/:isbn', auth, addReview);
-router.put('/:id', auth, updateReview);
-router.delete('/:id', auth, deleteReview);
+router.post('/:isbn', protect, addReview);
+router.put('/:isbn/:reviewId', protect, updateReview);
+router.delete('/:isbn/:reviewId', protect, deleteReview);
 
 module.exports = router;

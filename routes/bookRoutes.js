@@ -1,10 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const { getAllBooks, searchBooks } = require('../controllers/bookController');
-const { getReviews } = require('../controllers/reviewController');
+const Review = require('../models/Review');
 
-router.get('/', getAllBooks);
-router.get('/search', searchBooks);
-router.get('/:isbn/reviews', getReviews);
+// Existing book routes above this...
+
+// 🔥 New route to get all reviews for a specific book by ISBN
+router.get('/:isbn/reviews', async (req, res) => {
+  try {
+    const reviews = await Review.find({ bookIsbn: req.params.isbn });
+    res.json(reviews);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 module.exports = router;

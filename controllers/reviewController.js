@@ -1,37 +1,28 @@
 const Review = require('../models/Review');
-
-exports.getReviews = async (req, res) => {
-  const reviews = await Review.find({ bookIsbn: req.params.isbn }).populate('user', 'username');
-  res.json(reviews);
-};
+const Book = require('../models/Book');
 
 exports.addReview = async (req, res) => {
-  const review = new Review({
-    bookIsbn: req.params.isbn,
-    user: req.user.id,
-    comment: req.body.comment,
-    rating: req.body.rating
-  });
+  const book = await Book.findOne({ isbn: req.params.isbn });
+  const review = new Review({ user: req.user._id, book: book._id, content: req.body.content });
   await review.save();
-  res.status(201).json(review);
+  res.json(review);
 };
 
 exports.updateReview = async (req, res) => {
-  const review = await Review.findById(req.params.id);
-  if (!review || review.user.toString() !== req.user.id) {
+  const review = await Review.findById(req.params.reviewId);
+  if (review.user.toString() !== req.user._id.toString())
     return res.status(403).json({ message: 'Forbidden' });
-  }
-  review.comment = req.body.comment || review.comment;
-  review.rating = req.body.rating || review.rating;
+
+  review.content = req.body.content;
   await review.save();
   res.json(review);
 };
 
 exports.deleteReview = async (req, res) => {
-  const review = await Review.findById(req.params.id);
-  if (!review || review.user.toString() !== req.user.id) {
+  const review = await Review.findById(req.params.reviewId);
+  if (review.user.toString() !== req.user._id.toString())
     return res.status(403).json({ message: 'Forbidden' });
-  }
+
   await review.remove();
   res.json({ message: 'Review deleted' });
 };

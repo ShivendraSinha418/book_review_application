@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
 const reviewSchema = new mongoose.Schema({
-  bookIsbn: { type: String, required: true },
+  book: { type: mongoose.Schema.Types.ObjectId, ref: 'Book' },
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  comment: String,
-  rating: Number
-}, { timestamps: true });
+  content: String,
+  createdAt: { type: Date, default: Date.now }
+});
 
 module.exports = mongoose.model('Review', reviewSchema);
